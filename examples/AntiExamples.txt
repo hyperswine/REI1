@@ -1,0 +1,35 @@
+1 + 1 -- WRONG!
++ 1 1  -- RIGHT!
+
+# No mutable variables
+x = 5. # just assign once
+
+If using let expressions
+
+x = 5;
+x = + x 1. # this shadows the previous x and creates a new binding. It does NOT modify the previous x.
+
+NO DO BLOCKS.
+
+There are no curried functions. Functions can be partially applied using _. at that position
+
+There are no multi line comments.
+
+No async/await. All IO is done in unsafe $ ... blocks and the actor model.
+
+No side effects outside unsafe $ ... blocks.
+
+Preconditions and Postconditions are the recommended way to do things.
+
+There are hardly any key words except like case ... of ..., unsafe, and so on.
+
+There is no "type" or "data" keyword. Everything is just functions and let expressions.
+
+So a type is literally just defined like
+
+User = Type $ User String Num String.
+
+Pattern matching can be done in the head of function definitions or in case ... of ... expressions.
+
+NO BUILT IN OPERATORS. Everything is prefix notation. Something like "+" is literally just an identifier for a function.
+So + works like a prefix function. E.g. + 1 2
