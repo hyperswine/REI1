@@ -43,6 +43,6 @@ classify n = case n of
     1 => "one",
     _ => "other".
 
-# Type definitions - NOT YET IMPLEMENTED
-# User = Type $ User String Num String.
-# Post = Type $ Post String String User.
+# Type definition
+User = Type $ User String Num String.
+Post = Type $ Post String String User.

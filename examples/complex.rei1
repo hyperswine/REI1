@@ -1,4 +1,5 @@
 # REI1 Complex Test - Multiple functions with computation
+
 # Mathematical operations
 square (x : Num) = * x x.
 cube (x : Num) = * x (square x).
