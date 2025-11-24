@@ -1,0 +1,3 @@
+# Test Type runtime function
+User = Type $ User String Num String.
+alice = User "Alice" 30 "alice@example.com".

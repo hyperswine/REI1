@@ -1,0 +1,6 @@
+uv run python to run a python script
+use uv run python debug_lang.py --string "<expr>" to debug an expressions
+
+uv run python debug_lang.py --string --component parse_program "result = 42."
+
+to debug a component like parse_program and expr result = 42.

@@ -1,0 +1,11 @@
+# Basic function definitions
+add x y = + x y.
+multiply x y = * x y.
+double x = * x 2.
+isEven x = == (% x 2) 0.
+
+# Parallel operations
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].
+doubled = par-map double numbers.
+evens = par-filter isEven numbers.
+sum_result = par-fold add 0 numbers.

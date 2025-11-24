@@ -1,0 +1,116 @@
+# REI1 Standard Library
+# Core list and higher-order functions implemented in REI1
+
+# Basic types
+True = Type $ True.
+False = Type $ False.
+
+# List operations
+
+# head: Get first element of list
+# Built-in: requires special handling for empty list error
+
+# tail: Get all but first element
+# Built-in: requires special handling for empty list error
+
+# length: Get length of list
+length [] = 0.
+length (cons _ xs) = + 1 (length xs).
+
+# reverse: Reverse a list
+reverse xs = reverseAcc xs [].
+reverseAcc [] acc = acc.
+reverseAcc (cons x xs) acc = reverseAcc xs (cons x acc).
+
+# concat: Concatenate two lists
+concat [] ys = ys.
+concat (cons x xs) ys = cons x (concat xs ys).
+
+# take: Take first n elements
+take n xs | == n 0 = [].
+take n [] = [].
+take n (cons x xs) = cons x (take (- n 1) xs).
+
+# drop: Drop first n elements
+drop n xs | == n 0 = xs.
+drop n [] = [].
+drop n (cons x xs) = drop (- n 1) xs.
+
+# elem: Check if element is in list
+elem x [] = False.
+elem x (cons y ys) | == x y = True.
+elem x (cons y ys) | otherwise = elem x ys.
+
+# range: Create list from start to end (inclusive)
+range start end | > start end = [].
+range start end = cons start (range (+ start 1) end).
+
+# zip: Zip two lists into list of pairs
+zip [] _ = [].
+zip _ [] = [].
+zip (cons x xs) (cons y ys) = cons (Pair x y) (zip xs ys).
+
+# Higher-order functions
+
+# map: Apply function to each element
+map f [] = [].
+map f (cons x xs) = cons (f x) (map f xs).
+
+# filter: Keep elements that satisfy predicate
+filter p [] = [].
+filter p (cons x xs) | p x = cons x (filter p xs).
+filter p (cons x xs) | otherwise = filter p xs.
+
+# fold: Fold (reduce) list with binary function
+fold f acc [] = acc.
+fold f acc (cons x xs) = fold f (f acc x) xs.
+
+# Additional utility functions
+
+# any: Check if any element satisfies predicate
+any p [] = False.
+any p (cons x xs) | p x = True.
+any p (cons x xs) | otherwise = any p xs.
+
+# all: Check if all elements satisfy predicate
+all p [] = True.
+all p (cons x xs) | p x = all p xs.
+all p (cons x xs) | otherwise = False.
+
+# sum: Sum all numbers in list
+sum xs = fold + 0 xs.
+
+# product: Product of all numbers in list
+product xs = fold * 1 xs.
+
+# maximum: Find maximum element (requires non-empty list)
+maximum (cons x []) = x.
+maximum (cons x xs) = max x (maximum xs).
+
+# minimum: Find minimum element (requires non-empty list)
+minimum (cons x []) = x.
+minimum (cons x xs) = min x (minimum xs).
+
+# max: Maximum of two values
+max x y | > x y = x.
+max x y | otherwise = y.
+
+# min: Minimum of two values
+min x y | < x y = x.
+min x y | otherwise = y.
+
+# replicate: Create list with n copies of value
+replicate n x | == n 0 = [].
+replicate n x = cons x (replicate (- n 1) x).
+
+# null: Check if list is empty
+null [] = True.
+null _ = False.
+
+# last: Get last element (requires non-empty list)
+last (cons x []) = x.
+last (cons x xs) = last xs.
+
+# init: Get all but last element
+init (cons x []) = [].
+init (cons x xs) = cons x (init xs).

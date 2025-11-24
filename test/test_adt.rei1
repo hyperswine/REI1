@@ -1,0 +1,14 @@
+# Test ADT functionality
+
+# Create User ADT
+User = Type $ User String Num String.
+
+# Create a user instance
+alice = User "Alice" 30 "alice@example.com".
+bob = User "Bob" 25 "bob@example.com".
+
+# Test that instances are created
+# (Pattern matching with constructors not yet fully implemented)
+
+# Simple test with numbers
+result = + 10 20.

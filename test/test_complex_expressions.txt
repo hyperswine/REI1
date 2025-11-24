@@ -1,0 +1,17 @@
+double x = * x 2.
+triple y = * y 3.
+add a b = + a b.
+
+# Test nested calls
+* (double 3) (triple 2)
+
+# Test multiple levels of nesting
+add (double 5) (triple 4)
+
+# Test with more complex nesting
+double (add 10 (triple 3))
+
+# Test operator as function with nested calls
++ (double 7) (* 3 (triple 2))
+
+exit.

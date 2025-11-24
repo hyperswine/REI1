@@ -1,0 +1,4 @@
+# Test minimal multi-binding
+x = 5.
+y = 10.
+add a b = + a b.

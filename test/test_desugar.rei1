@@ -1,0 +1,6 @@
+# Test pipeline and dollar desugaring
+x = 5.
+double y = * 2 y.
+
+# Test pipeline: x |> f should become f(x)
+result = 10 |> double.

@@ -1,0 +1,25 @@
+# REI1 Complex Test - Multiple functions with computation
+# Mathematical operations
+square (x : Num) = * x x.
+cube (x : Num) = * x (square x).
+power4 (x : Num) = square (square x).
+
+# Arithmetic functions
+add (a : Num) (b : Num) = + a b.
+subtract (a : Num) (b : Num) = - a b.
+multiply (a : Num) (b : Num) = * a b.
+divide (a : Num) (b : Num) = / a b.
+
+# Test computations
+base = 3.
+squared = square base.
+cubed = cube base.
+fourth_power = power4 base.
+
+# Complex calculations
+sum_powers = add (add squared cubed) fourth_power.
+avg_powers = divide sum_powers 3.
+
+# Data structures with computed values (using lists)
+powers = [squared, cubed, fourth_power].
+point_3d = [base, squared, cubed].

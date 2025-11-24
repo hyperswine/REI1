@@ -1,0 +1,6 @@
+# Test unsafe context tracking
+# This should work - IO operations inside unsafe
+result = unsafe $ IO.read "test/test_data.txt".
+
+# This should fail - IO operations outside unsafe
+# badResult = IO.read "test/test_data.txt".

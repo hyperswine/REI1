@@ -1,0 +1,26 @@
+# REI1 Advanced Features Test
+
+# Type definitions - COMMENTED OUT: full type system not yet implemented
+# User = Type $ User String Num String.
+# Post = Type $ Post String String User.
+
+# Functions with constructor patterns - COMMENTED OUT: pattern matching not yet implemented
+# User.name (User n _ _) = n.
+# User.age (User _ a _) = a.
+# User.email (User _ _ e) = e.
+
+# Post.title (Post t _ _) = t.
+# Post.content (Post _ c _) = c.
+# Post.author (Post _ _ a) = a.
+
+# Case expressions - COMMENTED OUT: constructor patterns not yet implemented
+# getUserInfo user = case user of
+#   User name age email => name,
+#   _ => "Unknown".
+
+# Lambda expressions
+increment = λ x => + x 1.
+double = λ x => * x 2.
+
+y = increment 5.
+z = double y.

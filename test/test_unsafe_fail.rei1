@@ -1,0 +1,2 @@
+# Test that IO fails without unsafe
+result = IO.read "test/test_data.txt".

@@ -1,0 +1,2 @@
+User = Type $ User String Num String.
+add (x : Num) (y : Num) = + x y.

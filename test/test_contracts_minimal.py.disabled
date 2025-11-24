@@ -1,0 +1,109 @@
+"""
+Minimal test for contract implementation
+"""
+
+from parsing import create_parser, CSTNode, SourceSpan
+from semantics import create_analyzer, ASTNode, TypeInfo
+from interpreter import REI1Interpreter
+
+def test_manual_contract():
+    """Test contract functionality with manually created function"""
+    print("=== Testing Manual Contract Creation ===")
+
+    from interpreter import REI1Function, REI1Value, RuntimeEnvironment
+
+    interpreter = REI1Interpreter()
+    env = RuntimeEnvironment()
+
+    # Set up basic arithmetic functions
+    env.bind("+", REI1Value(lambda x, y: REI1Value(x.value + y.value, TypeInfo("Num")), TypeInfo("Function")))
+    env.bind("-", REI1Value(lambda x, y: REI1Value(x.value - y.value, TypeInfo("Num")), TypeInfo("Function")))
+    env.bind("*", REI1Value(lambda x, y: REI1Value(x.value * y.value, TypeInfo("Num")), TypeInfo("Function")))
+    env.bind("/", REI1Value(lambda x, y: REI1Value(x.value / y.value, TypeInfo("Num")), TypeInfo("Function")))
+    env.bind("/=", REI1Value(lambda x, y: REI1Value(x.value != y.value, TypeInfo("Bool")), TypeInfo("Function")))
+    env.bind(">", REI1Value(lambda x, y: REI1Value(x.value > y.value, TypeInfo("Bool")), TypeInfo("Function")))
+
+    # Create contract AST
+    contract_ast = ASTNode(
+        "CONTRACT",
+        {
+            "pre": ASTNode("FUNCTION_CALL", {
+                "function": ASTNode("IDENTIFIER", "/=", [], None, TypeInfo("Function")),
+                "args": [
+                    ASTNode("IDENTIFIER", "y", [], None, TypeInfo("Num")),
+                    ASTNode("NUMBER", 0, [], None, TypeInfo("Num"))
+                ]
+            }, [], None, TypeInfo("Bool")),
+            "post": ASTNode("FUNCTION_CALL", {
+                "function": ASTNode("IDENTIFIER", ">", [], None, TypeInfo("Function")),
+                "args": [
+                    ASTNode("IDENTIFIER", "result", [], None, TypeInfo("Num")),
+                    ASTNode("NUMBER", 0, [], None, TypeInfo("Num"))
+                ]
+            }, [], None, TypeInfo("Bool"))
+        },
+        [],
+        None,
+        TypeInfo("Contract")
+    )    # Create function body
+    body_ast = ASTNode("FUNCTION_CALL", {
+        "function": ASTNode("IDENTIFIER", "/", [], None, TypeInfo("Function")),
+        "args": [
+            ASTNode("IDENTIFIER", "x", [], None, TypeInfo("Num")),
+            ASTNode("IDENTIFIER", "y", [], None, TypeInfo("Num"))
+        ]
+    }, [], None, TypeInfo("Num"))
+
+    # Create function with contract
+    divide_func = REI1Function(
+        name="divide",
+        params=["x", "y"],
+        body=body_ast,
+        closure_env=env,
+        contract=contract_ast
+    )
+
+    divide_value = REI1Value(divide_func, TypeInfo("Function"))
+    env.bind("divide", divide_value)
+
+    try:
+        # Test valid call (should succeed)
+        print("\n--- Testing valid call: divide 10 2 ---")
+        args = [
+            REI1Value(10, TypeInfo("Num")),
+            REI1Value(2, TypeInfo("Num"))
+        ]
+        result = interpreter._call_function(divide_value, args, body_ast)
+        print(f"✅ Result: {result.value}")
+
+        # Test invalid call (should fail with precondition violation)
+        print("\n--- Testing invalid call: divide 10 0 ---")
+        args = [
+            REI1Value(10, TypeInfo("Num")),
+            REI1Value(0, TypeInfo("Num"))
+        ]
+        try:
+            result = interpreter._call_function(divide_value, args, body_ast)
+            print(f"❌ Should have failed but got: {result.value}")
+        except Exception as e:
+            print(f"✅ Correctly failed with: {e}")
+
+        # Test case that would fail postcondition: divide -10 2 = -5 (not > 0)
+        print("\n--- Testing postcondition failure: divide -10 2 ---")
+        args = [
+            REI1Value(-10, TypeInfo("Num")),
+            REI1Value(2, TypeInfo("Num"))
+        ]
+        try:
+            result = interpreter._call_function(divide_value, args, body_ast)
+            print(f"❌ Should have failed postcondition but got: {result.value}")
+        except Exception as e:
+            print(f"✅ Correctly failed with: {e}")
+
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    test_manual_contract()

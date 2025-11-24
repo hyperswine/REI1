@@ -1,0 +1,15 @@
+square x = * x x.
+double y = + y y.
+add a b = + a b.
+
+num = 7.
+squared = square num.
+doubled = double num.
+sum = add squared doubled.
+
+add-then-double = add 4 5 |> double.
+
+# NOTE: Underscore placeholder not yet implemented
+# add-then-double = add 4 5 |> double _.
+
+# square (x: String) = x.

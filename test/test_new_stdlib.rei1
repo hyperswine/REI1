@@ -1,0 +1,9 @@
+# Test new stdlib functions
+nums = [1, 2, 3, 4, 5].
+reversed = reverse nums.
+first_three = take 3 nums.
+after_two = drop 2 nums.
+has_three = elem 3 nums.
+has_ten = elem 10 nums.
+r = range 1 6.
+pairs = zip nums reversed.

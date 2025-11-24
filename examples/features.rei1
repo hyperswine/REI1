@@ -1,0 +1,48 @@
+# Test all fixed and implemented REI1 features
+
+# Basic value bindings
+x = 42.
+name = "Alice".
+
+# Function definitions with type annotations
+add (x : Num) (y : Num) = + x y.
+
+# Function with return type annotation
+multiply (a : Num) (b : Num) -> Num = * a b.
+
+# Function with design by contract
+safeDivide (x : Num) (y : Num) -> Num where {
+    pre: y != 0
+} = / x y.
+
+# Partial application with underscore - NOT YET IMPLEMENTED
+# increment = add 1 _.
+# double = multiply _ 2.
+
+# Dollar operator for function application
+result = show $ + 3 4.
+
+# List expressions (REI1 uses lists instead of tuples)
+coords = [10, 20].
+point3d = [1, 2, 3].
+
+# More list expressions
+numbers = [1, 2, 3, 4].
+names = ["Alice", "Bob", "Charlie"].
+
+# Function calls
+sum = add 5 7.
+product = multiply 3 4.
+
+# Nested expressions
+complex = add (multiply 2 3) (+ 4 5).
+
+# Case expressions
+classify n = case n of
+    0 => "zero",
+    1 => "one",
+    _ => "other".
+
+# Type definitions - NOT YET IMPLEMENTED
+# User = Type $ User String Num String.
+# Post = Type $ Post String String User.

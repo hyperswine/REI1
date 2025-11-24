@@ -1,0 +1,23 @@
+# Test placeholder-based partial application
+
+add x y = + x y.
+
+# Test 1: Placeholder in first position
+add_to_10 = add _ 10.
+result1 = add_to_10 5.
+
+# Test 2: Placeholder in second position
+add_5 = add 5 _.
+result2 = add_5 10.
+
+# Test 3: Multiple placeholders (if supported)
+# multiply x y = * x y.
+# partial_mult = multiply _ _.
+# This should probably just return the function itself
+
+# Test 4: Placeholder with builtin operators
+double_me = * 2 _.
+result3 = double_me 21.
+
+# Test 5: Placeholder in pipeline
+result4 = 100 |> + _ 50.

@@ -1,0 +1,22 @@
+[project]
+name = "rei1"
+version = "0.1.0"
+description = "REI1 by Jasen Q"
+readme = "README.md"
+requires-python = ">=3.13, <3.14"
+dependencies = [
+    "pyinstaller>=6.14.2",
+    "pykka>=4.2.0",
+    "pyparsing>=3.2.3",
+    "pytest>=8.4.1",
+    "toolz>=1.0.0",
+]
+
+[tool.autopep8]
+indent_size = 2
+
+[project.scripts]
+# rei1 = "rei1.main:main"
+
+[tool.uv]
+# package = true

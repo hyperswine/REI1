@@ -1,0 +1,31 @@
+# REI1 Constructor Pattern Matching Test
+# Tests pattern matching with ADT constructors
+
+# Define User type with 3 fields
+User = Type $ User String Num String.
+
+# Create some users
+alice = User "Alice" 30 "alice@example.com".
+bob = User "Bob" 25 "bob@example.com".
+
+# Pattern match to extract name
+getName user = case user of
+  User name age email => name,
+  _ => "Unknown".
+
+aliceName = getName alice.
+bobName = getName bob.
+
+# Pattern match with wildcards
+getAge user = case user of
+  User _ age _ => age,
+  _ => 0.
+
+aliceAge = getAge alice.
+
+# Pattern match to construct greeting
+greet user = case user of
+  User name age email => + (+ "Hello, " name) (+ "! You are " (show age)),
+  _ => "Hello, stranger!".
+
+aliceGreeting = greet alice.

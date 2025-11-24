@@ -1,0 +1,40 @@
+# REI1 Basic Features Test
+
+# Type definitions - manual constructor for now
+User = Type $ User String Num String.
+# Post = Type $ Post String String User.
+
+# Simple functions
+# Note if you pattern match in the head and use a Constructor like User a b c that does not need to be typed explicitly for dispatch because that is known from the pattern match
+add (x : Num) (y : Num) = + x y.
+multiply (a : Num) (b : Num) -> Num = * a b.
+
+# Function with contract
+safeDivide (x : Num) (y : Num) -> Num where { pre: y != 0 } = / x y.
+
+# Values with various types (User constructor available as builtin)
+# alice = User "Alice" 30 "alice@example.com".
+coords = [10, 20].
+numbers = [1, 2, 3].
+
+myadd x = case x of
+  0 => 100,
+  _ => + x 10.
+
+result = myadd 5.
+
+user = User "Bob" 25 "bob@example.com".
+
+y = safeDivide 10 2.
+
+# z = safeDivide 10 0.  # This should trigger a contract violation at runtime
+
+# this doesnt work
+greeting = case user of
+  User name age email => + "Hello, " (+ name "!").
+
+# example of guards
+isAdult (user: User) | age user >= 18 = True.
+isAdult (user: User) | otherwise = False.
+
+isAdultResult = isAdult user.

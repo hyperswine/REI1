@@ -1,0 +1,12 @@
+MySig = Sig {
+  action1 = Int -> Int,
+  action2 = String -> String
+}.
+
+#MyModule = MySig {
+#  action1 = λ msg => * msg 2,
+#  action2 = λ msg => ++ "Hello, " msg
+#}.
+
+# basically a let expr, use MyModule in (action1 5)
+#> use MyModule; action1 5.  # Should evaluate to 10.

@@ -1,0 +1,8 @@
+# REI1 Data Structures Test - Lists and nested lists
+point = [100, 200].
+coordinates = [[0, 0], [10, 20], [30, 40]].
+numbers = [1, 2, 3, 5, 8, 13].
+
+# Function that works with data structures
+distance (p1 : [Num, Num]) (p2 : [Num, Num]) = + 1 1.  # Placeholder implementation
+result = distance [0, 0] point.

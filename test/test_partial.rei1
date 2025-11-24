@@ -1,0 +1,22 @@
+# Test partial application
+
+# Basic binary function
+add x y = + x y.
+
+# Test 1: Direct partial application
+add5 = add 5.
+result1 = add5 10.
+
+# Test 2: Partial application in pipeline
+result2 = 10 |> add 5.
+
+# Test 3: Chained partial application
+addThenMultiply x y z = * (+ x y) z.
+step1 = addThenMultiply 2.
+step2 = step1 3.
+result3 = step2 4.
+
+# Test 4: Multiple partial applications
+multiply x y = * x y.
+double = multiply 2.
+result4 = double 21.

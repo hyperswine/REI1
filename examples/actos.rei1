@@ -1,0 +1,7 @@
+worker = Proc.spawn (λ msg => * msg 2).
+x = Proc.send worker 5.
+result = Proc.recv worker.
+y = IO.print result.
+
+# just prints it out
+> y.

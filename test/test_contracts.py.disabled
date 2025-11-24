@@ -1,0 +1,137 @@
+"""
+Test script for REI1 Design by Contract features
+"""
+
+from parsing import create_parser
+from semantics import create_analyzer
+from interpreter import REI1Interpreter
+
+def test_contract_parsing():
+    """Test that contracts can be parsed correctly"""
+    print("=== Testing Contract Parsing ===")
+
+    parser = create_parser()
+    analyzer = create_analyzer()
+    interpreter = REI1Interpreter()
+
+    test_cases = [
+        # Simple precondition
+        'add (x: Num) (y: Num) -> Num where { pre: true } = + x y.',
+
+        # Precondition with expression
+        'divide (x: Num) (y: Num) -> Num where { pre: /= y 0 } = / x y.',
+
+        # Postcondition
+        'abs (x: Num) -> Num where { post: >= result 0 } = case (>= x 0) of true => x, false => - 0 x.',
+
+        # Both precondition and postcondition
+        'safeDivide (x: Num) (y: Num) -> Num where { pre: /= y 0, post: >= result 0 } = / x y.',
+    ]
+
+    for i, test_case in enumerate(test_cases, 1):
+        print(f"\nTest {i}: {test_case}")
+        try:
+            # Parse
+            cst_nodes = parser.parse_string(test_case)
+            print(f"  ✅ Parsing successful")
+
+            # Semantic analysis
+            ast_nodes = analyzer.analyze(cst_nodes)
+            print(f"  ✅ Semantic analysis successful")
+
+            # Check if contract information is preserved
+            if ast_nodes and len(ast_nodes) > 0:
+                node = ast_nodes[0]
+                if node.type == "FUNCTION_DEF" and node.value.get("contract"):
+                    contract = node.value["contract"]
+                    print(f"  ✅ Contract preserved: {contract.type}")
+                    if contract.value.get("pre"):
+                        print(f"      - Precondition: Yes")
+                    if contract.value.get("post"):
+                        print(f"      - Postcondition: Yes")
+                else:
+                    print(f"  ⚠️ No contract found in AST")
+
+        except Exception as e:
+            print(f"  ❌ Error: {e}")
+
+def test_contract_evaluation():
+    """Test that contracts are evaluated at runtime"""
+    print("\n\n=== Testing Contract Evaluation ===")
+
+    parser = create_parser()
+    analyzer = create_analyzer()
+    interpreter = REI1Interpreter()
+
+    # Test precondition violation
+    print("\nTesting precondition violation:")
+    try:
+        code = '''
+        divide (x: Num) (y: Num) -> Num where { pre: /= y 0 } = / x y.
+        result = divide 10 0.
+        '''
+
+        cst_nodes = parser.parse_string(code)
+        ast_nodes = analyzer.analyze(cst_nodes)
+        results = interpreter.interpret_program(ast_nodes)
+
+        print(f"  ❌ Should have failed with precondition violation")
+
+    except Exception as e:
+        if "Precondition violation" in str(e):
+            print(f"  ✅ Correctly caught precondition violation: {e}")
+        else:
+            print(f"  ⚠️ Unexpected error: {e}")
+
+    # Test successful contract
+    print("\nTesting successful contract:")
+    try:
+        code = '''
+        divide (x: Num) (y: Num) -> Num where { pre: /= y 0 } = / x y.
+        result = divide 10 2.
+        '''
+
+        cst_nodes = parser.parse_string(code)
+        ast_nodes = analyzer.analyze(cst_nodes)
+        results = interpreter.interpret_program(ast_nodes)
+
+        if 'result' in results:
+            print(f"  ✅ Contract passed: result = {results['result'].value}")
+        else:
+            print(f"  ⚠️ No result found")
+
+    except Exception as e:
+        print(f"  ❌ Unexpected error: {e}")
+
+def test_postcondition():
+    """Test postcondition checking"""
+    print("\n\nTesting postcondition:")
+    try:
+        parser = create_parser()
+        analyzer = create_analyzer()
+        interpreter = REI1Interpreter()
+
+        code = '''
+        abs (x: Num) -> Num where { post: >= result 0 } =
+            case (>= x 0) of
+                true => x,
+                false => - 0 x.
+
+        result1 = abs 5.
+        result2 = abs -3.
+        '''
+
+        cst_nodes = parser.parse_string(code)
+        ast_nodes = analyzer.analyze(cst_nodes)
+        results = interpreter.interpret_program(ast_nodes)
+
+        print(f"  ✅ abs(5) = {results.get('result1', 'N/A')}")
+        print(f"  ✅ abs(-3) = {results.get('result2', 'N/A')}")
+
+    except Exception as e:
+        print(f"  ❌ Error: {e}")
+
+if __name__ == "__main__":
+    test_contract_parsing()
+    test_contract_evaluation()
+    test_postcondition()

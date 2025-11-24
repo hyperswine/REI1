@@ -1,0 +1,5 @@
+# REI1 Simple Test - Basic arithmetic and variables
+x = 5.
+y = 10.
+sum = + x y.
+product = * x y.

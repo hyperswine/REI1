@@ -1,0 +1,27 @@
+# Basic functions for testing
+double x = * x 2.
+add x y = + x y.
+multiply x y = * x y.
+isEven x = == (% x 2) 0.
+isOdd x = == (% x 2) 1.
+
+# Test data
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].
+small_numbers = [1, 2, 3, 4, 5].
+
+# 1. Pipeline Operator Demonstrations
+pipeline_double = 5 |> double.
+pipeline_chain = 10 |> double |> add 5.
+
+# 2. Parallel Operations
+parallel_doubled = par-map double numbers.
+parallel_evens = par-filter isEven numbers.
+parallel_sum = par-fold add 0 small_numbers.
+
+# 3. Unsafe IO Operations (create test files first)
+write_result = unsafe $ IO.write "demo_file.txt" "Hello from REI1!".
+read_content = unsafe $ IO.read "demo_file.txt".
+
+step1 = par-map double small_numbers.
+step2 = par-filter isEven step1.
+final_result = par-fold add 0 step2.
