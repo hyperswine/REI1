@@ -5,6 +5,7 @@ No classes, only pure functions and immutable data structures
 
 from typing import Any, Dict, List, Optional, Tuple
 from parsing import CSTNode, SourceSpan
+from utilities import extract_from_wrapper, unpack_typed_tuple, safe_dict_get
 
 
 # ============================================================================
@@ -120,22 +121,12 @@ def create_builtin_env() -> Dict:
 
 def extract_identifier_name(identifier_data) -> Optional[str]:
   """Extract identifier name from various representations"""
-  if isinstance(identifier_data, str):
-    return identifier_data
-  elif isinstance(identifier_data, tuple) and len(identifier_data) >= 2:
-    if identifier_data[0] == "IDENTIFIER":
-      return identifier_data[1]
-  return None
+  return extract_from_wrapper(identifier_data, "IDENTIFIER")
 
 
 def extract_pattern_name(pattern_data) -> Optional[str]:
   """Extract name from pattern data"""
-  if isinstance(pattern_data, tuple) and len(pattern_data) >= 2:
-    if pattern_data[0] == "PATTERN_VAR":
-      return pattern_data[1]
-  elif isinstance(pattern_data, str):
-    return pattern_data
-  return None
+  return extract_from_wrapper(pattern_data, "PATTERN_VAR")
 
 
 # ============================================================================
@@ -226,12 +217,7 @@ def analyze_function_call_tuple(call_data, env: Dict, debug: bool = False) -> Di
 
 def analyze_function_name_tuple(name_data, env: Dict, debug: bool = False) -> Dict:
   """Analyze function name from tuple representation"""
-  if isinstance(name_data, tuple) and len(name_data) >= 2:
-    name_str = name_data[1] if name_data[0] == "IDENTIFIER" else ""
-  elif isinstance(name_data, str):
-    name_str = name_data
-  else:
-    name_str = ""
+  name_str = extract_from_wrapper(name_data, "IDENTIFIER", default="") or ""
 
   type_info = env_lookup(env, name_str) or make_type_info("Function")
   return make_ast_node("FUNCTION_NAME", name_str, [], None, type_info)
@@ -240,12 +226,7 @@ def analyze_function_name_tuple(name_data, env: Dict, debug: bool = False) -> Di
 def analyze_function_name(cst_node: CSTNode, env: Dict, debug: bool = False) -> Dict:
   """Analyze function name from CST node"""
   # Extract name from tuple format ('IDENTIFIER', 'name') or use directly
-  if isinstance(cst_node.value, tuple) and len(cst_node.value) >= 2:
-    name_str = cst_node.value[1] if cst_node.value[0] == "IDENTIFIER" else ""
-  elif isinstance(cst_node.value, str):
-    name_str = cst_node.value
-  else:
-    name_str = ""
+  name_str = extract_from_wrapper(cst_node.value, "IDENTIFIER", default="") or ""
 
   type_info = env_lookup(env, name_str) or make_type_info("Function")
   return make_ast_node("FUNCTION_NAME", name_str, [], cst_node.span, type_info)
