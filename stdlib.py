@@ -5,6 +5,14 @@ Pure functional style using immutable dictionaries
 """
 
 from typing import Dict, Callable, Any, List
+import operator
+from utilities import (
+  binary_comparison_op,
+  binary_arithmetic_op,
+  validate_function_args,
+  type_mismatch_error,
+  is_value_dict
+)
 
 
 # ============================================================================
@@ -150,19 +158,13 @@ def rei1_reverse(lst: Dict) -> Dict:
 
 def rei1_take(n: Dict, lst: Dict) -> Dict:
   """Take first n elements from list"""
-  if n['type'] != 'Num':
-    raise REI1RuntimeError(f"take requires number, got {n['type']}")
-  if lst['type'] != 'List':
-    raise REI1RuntimeError(f"take requires list, got {lst['type']}")
+  validate_function_args("take", [n, lst], ["Num", "List"])
   return make_value(lst['value'][:int(n['value'])], "List")
 
 
 def rei1_drop(n: Dict, lst: Dict) -> Dict:
   """Drop first n elements from list"""
-  if n['type'] != 'Num':
-    raise REI1RuntimeError(f"drop requires number, got {n['type']}")
-  if lst['type'] != 'List':
-    raise REI1RuntimeError(f"drop requires list, got {lst['type']}")
+  validate_function_args("drop", [n, lst], ["Num", "List"])
   return make_value(lst['value'][int(n['value']):], "List")
 
 
@@ -220,44 +222,31 @@ def rei1_ne(x: Dict, y: Dict) -> Dict:
   return make_value(not result['value'], "Bool")
 
 
+# Use factory functions for comparison operations
+_rei1_lt_impl = binary_comparison_op(operator.lt, "less than")
+_rei1_gt_impl = binary_comparison_op(operator.gt, "greater than")
+_rei1_le_impl = binary_comparison_op(operator.le, "less than or equal")
+_rei1_ge_impl = binary_comparison_op(operator.ge, "greater than or equal")
+
+
 def rei1_lt(x: Dict, y: Dict) -> Dict:
   """Less than comparison"""
-  if x['type'] == "Num" and y['type'] == "Num":
-    return make_value(x['value'] < y['value'], "Bool")
-  elif x['type'] == "String" and y['type'] == "String":
-    return make_value(x['value'] < y['value'], "Bool")
-  else:
-    raise REI1RuntimeError(f"Cannot compare {x['type']} and {y['type']}")
+  return _rei1_lt_impl(x, y, make_value)
 
 
 def rei1_gt(x: Dict, y: Dict) -> Dict:
   """Greater than comparison"""
-  if x['type'] == "Num" and y['type'] == "Num":
-    return make_value(x['value'] > y['value'], "Bool")
-  elif x['type'] == "String" and y['type'] == "String":
-    return make_value(x['value'] > y['value'], "Bool")
-  else:
-    raise REI1RuntimeError(f"Cannot compare {x['type']} and {y['type']}")
+  return _rei1_gt_impl(x, y, make_value)
 
 
 def rei1_le(x: Dict, y: Dict) -> Dict:
   """Less than or equal comparison"""
-  if x['type'] == "Num" and y['type'] == "Num":
-    return make_value(x['value'] <= y['value'], "Bool")
-  elif x['type'] == "String" and y['type'] == "String":
-    return make_value(x['value'] <= y['value'], "Bool")
-  else:
-    raise REI1RuntimeError(f"Cannot compare {x['type']} and {y['type']}")
+  return _rei1_le_impl(x, y, make_value)
 
 
 def rei1_ge(x: Dict, y: Dict) -> Dict:
   """Greater than or equal comparison"""
-  if x['type'] == "Num" and y['type'] == "Num":
-    return make_value(x['value'] >= y['value'], "Bool")
-  elif x['type'] == "String" and y['type'] == "String":
-    return make_value(x['value'] >= y['value'], "Bool")
-  else:
-    raise REI1RuntimeError(f"Cannot compare {x['type']} and {y['type']}")
+  return _rei1_ge_impl(x, y, make_value)
 
 
 # ============================================================================
@@ -276,41 +265,37 @@ def rei1_add(x: Dict, y: Dict) -> Dict:
     raise REI1RuntimeError(f"Cannot add {x['type']} and {y['type']}")
 
 
+# Use factory functions for arithmetic operations
+_rei1_sub_impl = binary_arithmetic_op(operator.sub, "subtract")
+_rei1_mul_impl = binary_arithmetic_op(operator.mul, "multiply")
+
+
 def rei1_sub(x: Dict, y: Dict) -> Dict:
   """Subtraction"""
-  if x['type'] == "Num" and y['type'] == "Num":
-    return make_value(x['value'] - y['value'], "Num")
-  else:
-    raise REI1RuntimeError(f"Cannot subtract {x['type']} and {y['type']}")
+  return _rei1_sub_impl(x, y, make_value)
 
 
 def rei1_mul(x: Dict, y: Dict) -> Dict:
   """Multiplication"""
-  if x['type'] == "Num" and y['type'] == "Num":
-    return make_value(x['value'] * y['value'], "Num")
-  else:
-    raise REI1RuntimeError(f"Cannot multiply {x['type']} and {y['type']}")
+  return _rei1_mul_impl(x, y, make_value)
 
 
 def rei1_div(x: Dict, y: Dict) -> Dict:
   """Division"""
-  if x['type'] == "Num" and y['type'] == "Num":
-    if y['value'] == 0:
-      raise REI1RuntimeError("Division by zero")
-    return make_value(x['value'] / y['value'], "Num")
-  else:
+  if x['type'] != "Num" or y['type'] != "Num":
     raise REI1RuntimeError(f"Cannot divide {x['type']} and {y['type']}")
+  if y['value'] == 0:
+    raise REI1RuntimeError("Division by zero")
+  return make_value(x['value'] / y['value'], "Num")
 
 
 def rei1_mod(x: Dict, y: Dict) -> Dict:
   """Modulo"""
-  if x['type'] == "Num" and y['type'] == "Num":
-    if y['value'] == 0:
-      raise REI1RuntimeError("Modulo by zero")
-    return make_value(x['value'] % y['value'], "Num")
-  else:
-    raise REI1RuntimeError(
-        f"Cannot compute modulo of {x['type']} and {y['type']}")
+  if x['type'] != "Num" or y['type'] != "Num":
+    raise REI1RuntimeError(f"Cannot compute modulo of {x['type']} and {y['type']}")
+  if y['value'] == 0:
+    raise REI1RuntimeError("Modulo by zero")
+  return make_value(x['value'] % y['value'], "Num")
 
 
 # ============================================================================
