@@ -14,8 +14,6 @@ import uuid
 from utilities import (
   is_value_dict,
   validate_function_args,
-  type_mismatch_error,
-  arity_error,
   extract_from_wrapper
 )
 
