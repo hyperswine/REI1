@@ -7,10 +7,8 @@ from typing import Any, Dict, List, Optional, Callable, Tuple, TypeVar
 import operator
 
 
-# Custom exception classes (imported from error_handling)
-class REI1RuntimeError(Exception):
-  """Runtime error in REI1 execution"""
-  pass
+# Custom exception classes (imported from stdlib)
+from stdlib import REI1RuntimeError
 
 
 T = TypeVar('T')
