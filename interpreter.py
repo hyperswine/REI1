@@ -11,6 +11,11 @@ import multiprocessing
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 import queue
 import uuid
+from utilities import (
+  is_value_dict,
+  validate_function_args,
+  extract_from_wrapper
+)
 
 # Import stdlib functions
 from stdlib import (
@@ -472,18 +477,14 @@ def proc_recv(actor_id: Dict, timeout: Optional[float] = None) -> Any:
 
 def par_map_impl(func: Dict, lst: Dict, env: Dict) -> Dict:
   """Parallel map implementation"""
-  if func['type'] != 'function':
-    raise RuntimeError(f"par-map requires function, got {func['type']}")
-
-  if lst['type'] != 'List':
-    raise RuntimeError(f"par-map requires list, got {lst['type']}")
+  validate_function_args("par-map", [func, lst], ["function", "List"])
 
   # For now, use sequential execution (full parallel requires picklable closures)
   # TODO: Implement proper parallel execution with process pool
   results = []
   for elem in lst['value']:
     # Ensure elem is wrapped as a value dict
-    if not (isinstance(elem, dict) and 'type' in elem):
+    if not is_value_dict(elem):
       elem = make_value(elem, type(elem).__name__)
     # Apply function to each element
     if len(func['params']) >= 1:
@@ -495,16 +496,12 @@ def par_map_impl(func: Dict, lst: Dict, env: Dict) -> Dict:
 
 def par_filter_impl(pred: Dict, lst: Dict, env: Dict) -> Dict:
   """Parallel filter implementation"""
-  if pred['type'] != 'function':
-    raise RuntimeError(f"par-filter requires function, got {pred['type']}")
-
-  if lst['type'] != 'List':
-    raise RuntimeError(f"par-filter requires list, got {lst['type']}")
+  validate_function_args("par-filter", [pred, lst], ["function", "List"])
 
   results = []
   for elem in lst['value']:
     # Ensure elem is wrapped as a value dict
-    if not (isinstance(elem, dict) and 'type' in elem):
+    if not is_value_dict(elem):
       elem = make_value(elem, type(elem).__name__)
     # Apply predicate to each element
     if len(pred['params']) >= 1:
@@ -517,16 +514,12 @@ def par_filter_impl(pred: Dict, lst: Dict, env: Dict) -> Dict:
 
 def par_fold_impl(func: Dict, init: Dict, lst: Dict, env: Dict) -> Dict:
   """Parallel fold implementation (sequential for now)"""
-  if func['type'] != 'function':
-    raise RuntimeError(f"par-fold requires function, got {func['type']}")
-
-  if lst['type'] != 'List':
-    raise RuntimeError(f"par-fold requires list, got {lst['type']}")
+  validate_function_args("par-fold", [func, lst], ["function", "List"])
 
   acc = init
   for elem in lst['value']:
     # Ensure elem is wrapped as a value dict
-    if not (isinstance(elem, dict) and 'type' in elem):
+    if not is_value_dict(elem):
       elem = make_value(elem, type(elem).__name__)
     # Apply function to accumulator and element
     if len(func['params']) >= 2:
@@ -620,10 +613,7 @@ def validate_contract(contract_ast: Dict, param_names: List[str], arg_values: Li
 
 def stdlib_map(func: Dict, lst: Dict, env: Dict) -> Dict:
   """Map function over list"""
-  if func['type'] != 'function':
-    raise RuntimeError(f"map requires function, got {func['type']}")
-  if lst['type'] != 'List':
-    raise RuntimeError(f"map requires list, got {lst['type']}")
+  validate_function_args("map", [func, lst], ["function", "List"])
 
   results = []
   for elem in lst['value']:
@@ -636,10 +626,7 @@ def stdlib_map(func: Dict, lst: Dict, env: Dict) -> Dict:
 
 def stdlib_filter(pred: Dict, lst: Dict, env: Dict) -> Dict:
   """Filter list with predicate"""
-  if pred['type'] != 'function':
-    raise RuntimeError(f"filter requires function, got {pred['type']}")
-  if lst['type'] != 'List':
-    raise RuntimeError(f"filter requires list, got {lst['type']}")
+  validate_function_args("filter", [pred, lst], ["function", "List"])
 
   results = []
   for elem in lst['value']:
@@ -653,10 +640,7 @@ def stdlib_filter(pred: Dict, lst: Dict, env: Dict) -> Dict:
 
 def stdlib_fold(func: Dict, init: Dict, lst: Dict, env: Dict) -> Dict:
   """Fold list with function and initial value"""
-  if func['type'] != 'function':
-    raise RuntimeError(f"fold requires function, got {func['type']}")
-  if lst['type'] != 'List':
-    raise RuntimeError(f"fold requires list, got {lst['type']}")
+  validate_function_args("fold", [func, lst], ["function", "List"])
 
   acc = init
   for elem in lst['value']:
