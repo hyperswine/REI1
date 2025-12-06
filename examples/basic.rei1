@@ -1,5 +1,7 @@
 # REI1 Basic Features Test
 
+User = Type $ User String Num String.
+
 # Simple functions
 # Note if you pattern match in the head and use a Constructor like User a b c that does not need to be typed explicitly for dispatch because that is known from the pattern match
 add (x : Num) (y : Num) = + x y.

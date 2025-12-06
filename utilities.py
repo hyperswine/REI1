@@ -7,8 +7,16 @@ from typing import Any, Dict, List, Optional, Callable, Tuple, TypeVar
 import operator
 
 
-# Custom exception classes (imported from stdlib)
-from stdlib import REI1RuntimeError
+# Custom exception classes
+class REI1RuntimeError(Exception):
+  """REI1 runtime error for stdlib"""
+
+  def __init__(self, message: str, span=None, source_line=None, env_snapshot=None):
+    self.message = message
+    self.span = span
+    self.source_line = source_line
+    self.env_snapshot = env_snapshot
+    super().__init__(message)
 
 
 T = TypeVar('T')

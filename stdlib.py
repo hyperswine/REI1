@@ -11,7 +11,8 @@ from utilities import (
   binary_arithmetic_op,
   validate_function_args,
   type_mismatch_error,
-  is_value_dict
+  is_value_dict,
+  REI1RuntimeError
 )
 
 
@@ -25,21 +26,6 @@ def make_value(value: Any, type_name: str = "Unknown") -> Dict:
       'value': value,
       'type': type_name
   }
-
-
-# ============================================================================
-# EXCEPTION CLASS
-# ============================================================================
-
-class REI1RuntimeError(Exception):
-  """REI1 runtime error for stdlib"""
-
-  def __init__(self, message: str, span=None, source_line=None, env_snapshot=None):
-    self.message = message
-    self.span = span
-    self.source_line = source_line
-    self.env_snapshot = env_snapshot
-    super().__init__(message)
 
 
 # ============================================================================
