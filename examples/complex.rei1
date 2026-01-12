@@ -1,15 +1,15 @@
 # REI1 Complex Test - Multiple functions with computation
 
 # Mathematical operations
-square (x : Num) = * x x.
-cube (x : Num) = * x (square x).
+square (x : Num) = x * x.
+cube (x : Num) = x * (square x).
 power4 (x : Num) = square (square x).
 
 # Arithmetic functions
-add (a : Num) (b : Num) = + a b.
-subtract (a : Num) (b : Num) = - a b.
-multiply (a : Num) (b : Num) = * a b.
-divide (a : Num) (b : Num) = / a b.
+add (a : Num) (b : Num) = a + b.
+subtract (a : Num) (b : Num) = a - b.
+multiply (a : Num) (b : Num) = a * b.
+divide (a : Num) (b : Num) = a / b.
 
 # Test computations
 base = 3.

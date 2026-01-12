@@ -1341,7 +1341,7 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
 
   elif func_val['type'] == 'Signature':
     # Calling a Signature value creates a Module
-    # MySig { add: λ x y => + x y, ... } creates a module
+    # MySig { add: lambda x y => + x y, ... } creates a module
     if len(args) != 1:
       raise RuntimeError(
           f"Signature expects 1 argument (implementation record), got {len(args)}")

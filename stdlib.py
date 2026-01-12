@@ -409,7 +409,7 @@ def rei1_unsafe(expr: Dict) -> Dict:
 def rei1_Sig(members: Dict) -> Dict:
   """Sig function - creates a callable module signature at runtime
   Usage: MySig = Sig { add: \"Num -> Num -> Num\", sub: \"Num -> Num -> Num\" }
-  Then: MyMod = MySig { add: λ x y => + x y, sub: λ x y => - x y }
+  Then: MyMod = MySig { add: lambda x y => + x y, sub: lambda x y => - x y }
 
   Takes a record/dictionary of function names to type signatures.
   Returns a callable signature value that when called with an implementation,

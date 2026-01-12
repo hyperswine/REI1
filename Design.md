@@ -25,20 +25,23 @@ True, False
 Operators and basic functions:
 
 ```rei1
-# Function application
-f $ g $ h x    # f(g(h(x)))
+# Low Precedence Right Assoc Function application
+f $ g $ h x. # f(g(h(x)))
 
 # Pipeline
-x |> f |> g |> h    # h(g(f(x)))
+x |> f _ |> g _ |> h _. # h(g(f(x)))
+
+# Mid precedence reverse pipeline
+x <| f <| g.
 
 # Partial application
-increment = + 1 _.
-add-to-end = ++ _ " END".
+increment = 1 + ?.
+add-to-end = ? + " END".
 
 # Case expressions (only control flow)
 result = case value of
-  Some x => process x,
-  None => default-value.
+  Some x => process x
+| None => default-value.
 
 # Not implemented placeholder
 todo-function x = ??.
@@ -51,9 +54,9 @@ todo-function x = ??.
 ```rei1
 result =
   x = case input of
-    Some x => + x 1,
-    None => 0;
-  + x 1.
+    Some x => + x 1
+  | None => 0;
+  x + 1.
 ```
 
 Note the `;` means let expression.
@@ -61,37 +64,44 @@ Note the `;` means let expression.
 ADT:
 
 ```rei1
-User = Type $ User String Num String.  # name, age, email
+# name, age, email
+User = Type (User String Num String).
 
 # Usage
 alice = User "Alice" 30 "alice@example.com".
 name = User.name alice.
 ```
 
-**Multiple dispatch** on argument types:
+**Multiple dispatch** on argument types using guards:
 ```rei1
-add (x : Num) (y : Num) = + x y.
-add (x : String) (y : String) = + x y.
-add (x : List a) (y : List a) = + x y.
+add : (x: 'a), (y: 'a) -> (z: 'a).
 
-result1 = add 3 4.        # Uses numeric addition
-result2 = add "hi" "bye". # Uses string concatenation
+# == operator works for parameterized types on both sides
+add x y | type x == Num and type y == Num = x + y.
+add x y | type x == Str and type y == Str = x + y.
+add x y | type x == List and type y == List = x + y.
+
+result1 = add 3 4.
+result2 = add "hi" "bye".
 ```
 
 **Unsafe blocks** for side effects:
 ```rei1
+# $ for right assoc less bind
+# <| for more bind
+
 main = unsafe $
-  content <- IO.read "config.txt";
-  parsed <- pure $ parse content;
+  content = IO.read "config.txt";
+  parsed = pure <| parse content;
   IO.write "output.txt" (process parsed);
   println "Done".
 ```
 
 **Actor-based concurrency**:
 ```rei1
-w msg = unsafe $ case msg of
-  Job data reply-to => result = process data; Proc.send reply-to (Result result),
-  Shutdown => Proc.send Proc.self Terminate.
+w msg = unsafe <| case msg of
+  Job data reply-to => result = process data; Proc.send reply-to (Result result)
+| Shutdown => Proc.send Proc.self Terminate.
 
 ws = unsafe $ map (lambda _ => Proc.spawn w) (List.from 1 4).
 ```
@@ -110,8 +120,12 @@ ng = native-postgres.
 
 # Module implements signature
 PostgresDB = DB {
-  connect url = unsafe $ {ng}-connect url,
-  query conn sql = unsafe $ {ng}-query conn sql,
-  close conn = unsafe $ {ng}-close conn
+  connect url = unsafe <| ${ng}-connect url,
+  query conn sql = unsafe <| ${ng}-query conn sql,
+  close conn = unsafe <| ${ng}-close conn
 }.
 ```
+
+----
+
+I want to push more things to the runtime if possible. Without as much hardcoding or custom syntactic constructs. Pattern matching for example could just take your value that you want to match on, then for each branch, try to match the pattern tree to the value tree (given that those are what they are represented in). No real special things are required, just parse the patterns and constructors to some relatively clean AST and maybe flatten it a bit in memory (through array like encoding). For modules, notice how they are almost exactly the same as a record if you zoom out. You could essentially just have a record which itself could be a list or array, then point the data at the fields of the module. For multiple dispatch, use a dispatch/3 function - the dispatch function takes a function name, its args and a list of types. It then pattern matches on those list of types and calls the right function to handle it. How could the codebase be updated to be more like that

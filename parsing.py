@@ -133,7 +133,7 @@ class REI1Tokenizer:
         # Conditional operators
         '?',
         # Other symbols
-        ';', '\\', 'λ', '~=', '++', '--',
+        ';', '\\', 'lambda', '~=', '++', '--',
     }
 
     # Keywords (removed Type, Sig, unsafe - now stdlib functions; removed True, False - now constructors)
@@ -327,7 +327,7 @@ class REI1Grammar:
     case_kw = Keyword("case")
     of_kw = Keyword("of")
     lambda_kw = Keyword("lambda") | Keyword(
-        "lam") | Keyword("\\") | Literal("λ")
+        "lam") | Keyword("\\") | Literal("lambda")
     where_kw = Keyword("where")
     pre_kw = Keyword("pre")
     post_kw = Keyword("post")

@@ -19,8 +19,8 @@
 #   _ => "Unknown".
 
 # Lambda expressions
-increment = λ x => + x 1.
-double = λ x => * x 2.
+increment = lambda x => + x 1.
+double = lambda x => * x 2.
 
 y = increment 5.
 z = double y.
