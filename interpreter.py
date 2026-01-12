@@ -1274,6 +1274,7 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
           'remaining_arity': arity - len(args)
       }
       return make_value(partial_data, "PartialFunction"), env
+
     elif len(args) > arity:
       raise RuntimeError(
           f"Function {func_data['name']} expects {arity} arguments, got {len(args)}")
@@ -1319,6 +1320,7 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
         return make_value(result, "Unknown"), env
     except Exception as e:
       raise RuntimeError(f"Error calling {func_data['name']}: {e}")
+
   elif func_val['type'] == 'constructor':
     # Type constructor - create a data structure
     ctor_name = func_val['ctor_name']
@@ -1336,6 +1338,7 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
         'fields': [arg['value'] for arg in args]
     }
     return make_value(ctor_data, type_name), env
+
   elif func_val['type'] == 'Signature':
     # Calling a Signature value creates a Module
     # MySig { add: λ x y => + x y, ... } creates a module
@@ -1352,6 +1355,7 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
         'module_type': 'Module'
     }
     return make_value(module_data, "Module"), env
+
   elif func_val['type'] == 'function':
     # User-defined function
     func_params = func_val['params']
@@ -1369,6 +1373,7 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
           'remaining_params': func_params[len(args):]
       }
       return make_value(partial_data, "PartialFunction"), env
+
     elif len(args) > len(func_params):
       raise RuntimeError(
           f"Function expects {len(func_params)} arguments, got {len(args)}")
@@ -1392,6 +1397,7 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
                         result_val, func_env, False, debug)
 
     return result_val, env
+
   elif func_val['type'] == 'multi_clause_function':
     # Multi-clause function - try each clause in order until one matches
     func_name = func_val['name']
@@ -1442,8 +1448,8 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
         return result_val, env
 
     # No clause matched - pattern match failure
-    raise RuntimeError(
-        f"No matching clause for function {func_name} with {len(args)} argument(s)")
+    raise RuntimeError(f"No matching clause for function {func_name} with {len(args)} argument(s)")
+
   elif func_val['type'] == 'PartialFunction':
     # Partially applied function - fill in remaining arguments
     partial_data = func_val['value']
@@ -1550,6 +1556,7 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
             'remaining_params': func_params[len(complete_args):]
         }
         return make_value(partial_data2, "PartialFunction"), env
+
       elif len(complete_args) > len(func_params):
         raise RuntimeError(
             f"Too many arguments for partial function: expected {len(func_params)}, got {len(complete_args)}")
@@ -1596,6 +1603,7 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
                 f"Operator {op_name} requires 2 arguments, got {len(complete_args)}")
         else:
           raise RuntimeError(f"Unknown operator: {op_name}")
+
       elif original_func['type'] == 'BuiltinFunction':
         # Handle builtin functions
         func_data = original_func['value']
@@ -1604,9 +1612,7 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
         needs_env = func_data.get('needs_env', False)
         needs_context_flag = func_data.get('needs_context', False)
 
-        if len(complete_args) != total_arity:
-          raise RuntimeError(
-              f"Function {func_data['name']} expects {total_arity} arguments, got {len(complete_args)}")
+        if len(complete_args) != total_arity: raise RuntimeError(f"Function {func_data['name']} expects {total_arity} arguments, got {len(complete_args)}")
 
         try:
           if needs_context_flag:
@@ -1647,6 +1653,7 @@ def eval_function_call(ast_node: Dict, env: Dict, debug: bool = False, context: 
         except Exception as e:
           raise RuntimeError(
               f"Error calling partial builtin {func_data['name']}: {e}")
+
       elif original_func['type'] == 'function':
         # Handle user-defined functions
         func_params = original_func['params']
