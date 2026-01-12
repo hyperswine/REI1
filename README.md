@@ -7,3 +7,7 @@ Usage:
 `uv run python` to run a python script
 
 use `uv run python debug_lang.py --string "<expr>"` to debug an expressions
+
+Use pytest for testing.
+
+Refer to DESIGN
